@@ -7,5 +7,7 @@ public enum TipoNotificacion {
         COMPRA_CONFIRMADA,
         COMPRA_EXITOSA,
         RECORDATORIO,
-        GENERAL
+        GENERAL,
+        PAGO,
+        MEMBRESIA
 }

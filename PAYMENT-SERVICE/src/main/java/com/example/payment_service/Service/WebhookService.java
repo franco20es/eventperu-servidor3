@@ -182,7 +182,7 @@ public class WebhookService {
     // ── Pago pendiente ────────────────────────────────────────────────
     private void procesarPendiente(PaymentTransactionModel tx) {
         notificar(tx, "PAGO",
-                "⏳ Pago en proceso",
+                " Pago en proceso",
                 String.format("Tu pago para %s está siendo procesado. Te notificaremos cuando se confirme.",
                         tx.getEventName()));
 
