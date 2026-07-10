@@ -1,0 +1,15 @@
+package com.example.Notification_Service.dto.Response;
+
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PreferenciasResponse {
+    private String  usuarioId;
+    private boolean emailActivo;
+    private boolean pushActivo;
+    private boolean smsActivo;
+    private boolean promocionesActivo;
+}

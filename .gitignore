@@ -1,0 +1,6 @@
+﻿.env
+*.tar.gz
+.idea/
+target/
+node_modules/
+*.jar

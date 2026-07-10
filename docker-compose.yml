@@ -1,0 +1,81 @@
+services:
+
+  postgres-payments:
+    image: postgres:16-alpine
+    container_name: postgres-payments
+    restart: always
+    environment:
+      POSTGRES_DB: payments_db
+      POSTGRES_USER: payments_user
+      POSTGRES_PASSWORD: payments_pass_2026
+    volumes:
+      - pg_payments:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments_user -d payments_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-notifications:
+    image: postgres:16-alpine
+    container_name: postgres-notifications
+    restart: always
+    environment:
+      POSTGRES_DB: notifications_db
+      POSTGRES_USER: notif_user
+      POSTGRES_PASSWORD: notif_pass_2026
+    volumes:
+      - pg_notifications:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notif_user -d notifications_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  payment-service:
+    build:
+      context: ./PAYMENT-SERVICE
+      dockerfile: Dockerfile
+    container_name: payment-service
+    restart: always
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8084
+      PAYMENT_DB_HOST: postgres-payments
+      PAYMENT_DB_NAME: payments_db
+      PAYMENT_DB_USER: payments_user
+      PAYMENT_DB_PASSWORD: payments_pass_2026
+      EUREKA_INSTANCE_IP_ADDRESS: 18.224.93.58
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+    depends_on:
+      postgres-payments:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./NOTIFICATION-SERVICE
+      dockerfile: Dockerfile
+    container_name: notification-service
+    restart: always
+    ports:
+      - "8085:8085"
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8085
+      NOTIF_DB_HOST: postgres-notifications
+      NOTIF_DB_NAME: notifications_db
+      NOTIF_DB_USER: notif_user
+      NOTIF_DB_PASSWORD: notif_pass_2026
+      EUREKA_INSTANCE_IP_ADDRESS: 18.224.93.58
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+    depends_on:
+      postgres-notifications:
+        condition: service_healthy
+
+volumes:
+  pg_payments:
+  pg_notifications:
